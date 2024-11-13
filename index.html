@@ -6,204 +6,181 @@
     <title>定边七中</title>
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
     <style>
+        /* 背景图片样式 */
         body {
             display: flex;
-            flex-direction: column;
             align-items: center;
             justify-content: center;
             min-height: 100vh;
             margin: 0;
             font-family: Arial, sans-serif;
-            background: #f2f2f2;
-            color: #202124;
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            color: #ffffff;
+            transition: background 0.3s;
         }
 
-        .logo {
-            font-size: 80px;
-            font-weight: bold;
-            color: #4285f4;
-            letter-spacing: -5px;
-        }
-
-        .logo span:nth-child(2) { color: #ea4335; }
-        .logo span:nth-child(3) { color: #fbbc05; }
-        .logo span:nth-child(4) { color: #4285f4; }
-        .logo span:nth-child(5) { color: #34a853; }
-
+        /* 半透明玻璃效果的搜索框容器 */
         .search-container {
             display: flex;
             flex-direction: column;
             align-items: center;
-            margin-top: 20px;
-            width: 100%;
-            max-width: 584px;
+            padding: 20px;
+            background: rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(10px);
+            border-radius: 12px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.25);
+            max-width: 600px;
+            width: 90%;
         }
 
+        /* Logo 样式 */
+        .logo {
+            font-size: 48px;
+            font-weight: bold;
+            margin-bottom: 20px;
+            letter-spacing: -2px;
+            color: #ffffff;
+        }
+
+        /* 搜索框样式 */
         .search-box {
+            position: relative;
+            width: 100%;
             display: flex;
             align-items: center;
-            width: 100%;
-            background: white;
-            border: 1px solid #dfe1e5;
-            box-shadow: 0 1px 6px rgba(32, 33, 36, 0.28);
-            border-radius: 24px;
-            padding: 0 14px;
-            height: 44px;
-            transition: box-shadow 0.2s ease-in-out;
-        }
-
-        .search-box:hover {
-            box-shadow: 0 1px 6px rgba(32, 33, 36, 0.3);
         }
 
         .search-box input {
             width: 100%;
-            height: 100%;
+            padding: 12px 16px;
+            border-radius: 30px;
             border: none;
-            outline: none;
-            padding: 0 10px;
-            font-size: 16px;
-        }
-
-        .search-icon {
-            color: #9aa0a6;
             font-size: 18px;
+            outline: none;
         }
 
-        .search-button-container {
-            margin-top: 20px;
-            display: flex;
-            gap: 8px;
-        }
-
+        /* 搜索按钮样式 */
         .search-button {
-            font-size: 14px;
-            color: #3c4043;
-            background: #f8f9fa;
-            border: 1px solid #dadce0;
-            border-radius: 4px;
-            padding: 10px 16px;
+            margin-top: 20px;
+            background-color: #4285f4;
+            color: white;
+            padding: 10px 20px;
+            font-size: 16px;
+            border: none;
+            border-radius: 20px;
             cursor: pointer;
-            transition: background-color 0.2s;
+            transition: background-color 0.3s ease;
         }
 
         .search-button:hover {
-            background: #f1f3f4;
-            border-color: #c6c6c6;
+            background-color: #357ae8;
         }
 
-        /* Suggestion box */
+        /* 自动补全下拉列表 */
         .suggestions {
+            position: absolute;
+            top: 50px;
             width: 100%;
             background: white;
-            border: 1px solid #dfe1e5;
             border-radius: 8px;
-            margin-top: 8px;
-            padding: 10px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.25);
             display: none;
-            box-shadow: 0 1px 6px rgba(32, 33, 36, 0.28);
             max-height: 200px;
             overflow-y: auto;
+            z-index: 100;
         }
 
         .suggestion-item {
-            padding: 8px;
+            padding: 8px 12px;
             cursor: pointer;
-            border-bottom: 1px solid #f1f3f4;
         }
 
         .suggestion-item:hover {
-            background-color: #f1f3f4;
-        }
-
-        footer {
-            position: absolute;
-            bottom: 0;
-            width: 100%;
-            text-align: center;
-            padding: 15px 0;
-            font-size: 14px;
-            color: #5f6368;
-            background: #f2f2f2;
-        }
-
-        footer a {
-            color: #1a73e8;
-            text-decoration: none;
-        }
-
-        footer a:hover {
-            text-decoration: underline;
+            background-color: #f1f1f1;
         }
     </style>
 </head>
 <body>
-    <div class="logo">
-        <span>定</span><span>边</span><span>七</span><span>中</span>
-    </div>
-    
     <div class="search-container">
+        <div class="logo">定边七中</div>
+        
         <div class="search-box">
-            <i class="search-icon fas fa-search"></i>
-            <input id="search-input" type="text" placeholder="请输入搜索关键词" autocomplete="off" oninput="getSuggestions()">
+            <input id="search-input" type="text" placeholder="请输入搜索关键词" autocomplete="off" oninput="fetchSuggestions()">
+            <div id="suggestions" class="suggestions"></div>
         </div>
-        
-        <!-- Suggestion box -->
-        <div id="suggestions" class="suggestions"></div>
-        
-        <div class="search-button-container">
-            <button class="search-button" onclick="performSearch()">百度搜索</button>
-            <button class="search-button" onclick="document.getElementById('search-input').value = ''">清空</button>
-        </div>
+
+        <button class="search-button" onclick="performSearch()">百度搜索</button>
     </div>
 
-    <footer>
-        <p>&copy; 2024 定边七中. 备案号：<a href="http://beian.miit.gov.cn" target="_blank">陕ICP备72618371号-X</a></p>
-    </footer>
-
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/js/all.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/0.21.1/axios.min.js"></script>
     <script>
-        // 动态获取搜索建议
-        function getSuggestions() {
-            const query = document.getElementById('search-input').value;
-            const suggestionsBox = document.getElementById('suggestions');
-
-            if (query.length < 2) {
-                suggestionsBox.style.display = 'none';
-                return;
-            }
-
-            const script = document.createElement('script');
-            script.src = `https://suggestion.baidu.com/su?wd=${encodeURIComponent(query)}&cb=showSuggestions`;
-            document.body.appendChild(script);
-            document.body.removeChild(script);
+        // 随机背景图片
+        function setRandomBackground() {
+            document.body.style.backgroundImage = 'url("https://source.unsplash.com/1600x900/?nature,water")';
         }
+        
+        setRandomBackground();
 
-        // JSONP 回调函数显示建议
-        function showSuggestions(data) {
+        // 获取百度搜索提示 API 返回的建议
+        async function fetchSuggestions() {
+            const input = document.getElementById('search-input');
             const suggestionsBox = document.getElementById('suggestions');
-            suggestionsBox.innerHTML = '';
+            const query = input.value.trim();
+            
+            if (query) {
+                try {
+                    const response = await axios.get(`https://suggestion.baidu.com/su?wd=${query}&cb=callback`, {
+                        adapter: jsonpAdapter,
+                    });
 
-            if (data.s && data.s.length > 0) {
-                suggestionsBox.style.display = 'block';
-                data.s.forEach(item => {
-                    const div = document.createElement('div');
-                    div.className = 'suggestion-item';
-                    div.textContent = item;
-                    div.onclick = () => performSearch(item);
-                    suggestionsBox.appendChild(div);
-                });
+                    // 处理百度 JSONP 响应，显示建议
+                    const suggestions = response.data.s || [];
+                    suggestionsBox.innerHTML = '';
+                    
+                    suggestions.forEach(suggestion => {
+                        const suggestionItem = document.createElement('div');
+                        suggestionItem.className = 'suggestion-item';
+                        suggestionItem.textContent = suggestion;
+                        suggestionItem.onclick = () => {
+                            input.value = suggestion;
+                            performSearch();
+                        };
+                        suggestionsBox.appendChild(suggestionItem);
+                    });
+                    
+                    suggestionsBox.style.display = suggestions.length ? 'block' : 'none';
+                } catch (error) {
+                    console.error('Error fetching suggestions:', error);
+                }
             } else {
                 suggestionsBox.style.display = 'none';
             }
         }
 
-        // 执行搜索
-        function performSearch(query) {
-            const searchQuery = query || document.getElementById('search-input').value;
-            if (searchQuery) {
-                const url = 'https://www.baidu.com/s?wd=' + encodeURIComponent(searchQuery);
-                window.open(url, '_blank');
+        // JSONP 适配器，用于跨域请求
+        const jsonpAdapter = (config) => {
+            return new Promise((resolve, reject) => {
+                const callbackName = `callback_${Date.now()}`;
+                window[callbackName] = (data) => {
+                    delete window[callbackName];
+                    document.body.removeChild(script);
+                    resolve({ data });
+                };
+
+                const script = document.createElement('script');
+                script.src = `${config.url}&cb=${callbackName}`;
+                script.onerror = reject;
+                document.body.appendChild(script);
+            });
+        };
+
+        // 搜索功能
+        function performSearch() {
+            const query = document.getElementById('search-input').value.trim();
+            if (query) {
+                window.open(`https://www.baidu.com/s?wd=${encodeURIComponent(query)}`, '_blank');
             }
         }
     </script>
