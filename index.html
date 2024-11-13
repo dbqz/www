@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>简洁多平台搜索</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        @keyframes gradientBG {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+        .gradient-bg {
+            background: linear-gradient(-45deg, #ee7752, #e73c7e, #23a6d5, #23d5ab);
+            background-size: 400% 400%;
+            animation: gradientBG 15s ease infinite;
+        }
+        .glass {
+            background: rgba(255, 255, 255, 0.25);
+            backdrop-filter: blur(4px);
+            border-radius: 10px;
+            border: 1px solid rgba(255, 255, 255, 0.18);
+        }
+        .search-input {
+            transition: all 0.3s ease-in-out;
+        }
+        .search-input:focus {
+            transform: scale(1.05);
+            box-shadow: 0 0 15px rgba(255, 255, 255, 0.5);
+        }
+        .platform-btn {
+            transition: all 0.3s ease-in-out;
+        }
+        .platform-btn:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+        }
+        #quote {
+            transition: all 0.5s ease;
+        }
+        #quote:hover {
+            transform: scale(1.05);
+        }
+        .footer {
+            margin-top: auto;
+        }
+    </style>
+</head>
+<body class="gradient-bg">
+    <div class="container mx-auto px-4 py-8">
+        <div class="glass p-8 max-w-2xl mx-auto">
+            <h1 class="text-4xl font-bold text-center text-white mb-8">简洁多平台搜索</h1>
+            
+            <form id="search-form" class="mb-8">
+                <div class="relative">
+                    <input type="text" id="search-input" class="search-input w-full p-4 rounded-full text-xl focus:outline-none transition-all duration-300" placeholder="请输入搜索关键词" required>
+                    <button type="submit" class="absolute right-0 top-0 mt-4 mr-5">
+                        <i class="fas fa-search text-gray-600 text-2xl"></i>
+                    </button>
+                </div>
+            </form>
+
+            <div class="flex justify-center space-x-4 mb-8">
+                <button class="platform-btn bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-4 rounded-full transition duration-300" data-platform="https://www.baidu.com/s?wd=">
+                    <i class="fab fa-baidu mr-2"></i>百度
+                </button>
+                <button class="platform-btn bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded-full transition duration-300" data-platform="https://www.bing.com/search?q=">
+                    <i class="fab fa-microsoft mr-2"></i>Bing
+                </button>
+                <button class="platform-btn bg-yellow-500 hover:bg-yellow-600 text-white font-bold py-2 px-4 rounded-full transition duration-300" data-platform="https://www.google.com/search?q=">
+                    <i class="fab fa-google mr-2"></i>Google
+                </button>
+            </div>
+
+            <div id="quote" class="text-center text-white p-4 rounded-lg bg-opacity-50 bg-gray-800">
+                <i class="fas fa-quote-left mr-2"></i>
+                <span id="quote-text">加载中...</span>
+                <i class="fas fa-quote-right ml-2"></i>
+            </div>
+        </div>
+    </div>
+
+    <footer class="footer bg-gray-800 bg-opacity-50 text-white text-center py-4">
+        <p>&copy; 2023 简洁多平台搜索. 保留所有权利.</p>
+        <p class="mt-2">备案号：<a href="http://beian.miit.gov.cn" target="_blank" class="text-blue-300 hover:underline">京ICP备XXXXXXXX号-X</a></p>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <script>
+        // 搜索功能
+        const searchForm = document.getElementById('search-form');
+        const searchInput = document.getElementById('search-input');
+        let selectedPlatform = 'https://www.baidu.com/s?wd=';
+
+        document.querySelectorAll('.platform-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                selectedPlatform = this.dataset.platform;
+                document.querySelectorAll('.platform-btn').forEach(b => b.classList.remove('ring-4', 'ring-white'));
+                this.classList.add('ring-4', 'ring-white');
+            });
+        });
+
+        searchForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+            const searchTerm = searchInput.value;
+            window.open(selectedPlatform + encodeURIComponent(searchTerm), '_blank');
+        });
+
+        // 随机名言功能
+        async function getRandomQuote() {
+            const quoteText = document.getElementById('quote-text');
+            try {
+                const response = await axios.get('https://api.quotable.io/random');
+                const { content, author } = response.data;
+                quoteText.innerHTML = `${content} - <strong>${author}</strong>`;
+            } catch (error) {
+                console.error('Error fetching quote:', error);
+                quoteText.textContent = '无法获取名言';
+            }
+        }
+
+        // 初始化
+        getRandomQuote();
+        setInterval(getRandomQuote, 60000); // 每分钟更新一次名言
+    </script>
+</body>
+</html>
