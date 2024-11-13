@@ -163,8 +163,8 @@
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/js/all.min.js"></script>
     <script>
-        // 获取百度搜索建议
-        async function fetchSuggestions() {
+        // JSONP方式实现百度搜索建议
+        function fetchSuggestions() {
             const input = document.getElementById('search-input').value;
             const suggestionsBox = document.getElementById('suggestions');
             
@@ -172,23 +172,19 @@
                 suggestionsBox.style.display = 'none';
                 return;
             }
-            
-            try {
-                const response = await fetch(`http://suggestion.baidu.com/su?wd=${encodeURIComponent(input)}&cb=callback`, {
-                    method: 'GET',
-                    mode: 'no-cors'
-                });
 
-                if (!response.ok) {
-                    throw new Error('请求失败');
-                }
+            const script = document.createElement('script');
+            script.src = `http://suggestion.baidu.com/su?wd=${encodeURIComponent(input)}&cb=displaySuggestions`;
+            document.body.appendChild(script);
+            document.body.removeChild(script);
+        }
 
-                // 提取百度建议结果
-                const text = await response.text();
-                const suggestions = text.match(/"([^"]+)"/g).map(item => item.replace(/"/g, ''));
+        function displaySuggestions(data) {
+            const suggestionsBox = document.getElementById('suggestions');
+            suggestionsBox.innerHTML = '';
 
-                suggestionsBox.innerHTML = '';
-                suggestions.forEach(suggestion => {
+            if (data.s && data.s.length > 0) {
+                data.s.forEach(suggestion => {
                     const suggestionItem = document.createElement('div');
                     suggestionItem.className = 'suggestion-item';
                     suggestionItem.textContent = suggestion;
@@ -198,10 +194,9 @@
                     };
                     suggestionsBox.appendChild(suggestionItem);
                 });
-
                 suggestionsBox.style.display = 'block';
-            } catch (error) {
-                console.error('获取百度搜索建议出错:', error);
+            } else {
+                suggestionsBox.style.display = 'none';
             }
         }
 
