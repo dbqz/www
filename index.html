@@ -6,42 +6,44 @@
     <title>定边七中</title>
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
     <style>
-        /* 背景图片样式 */
-        body {
+        /* 基本样式 */
+        body, html {
             display: flex;
             align-items: center;
             justify-content: center;
             min-height: 100vh;
             margin: 0;
+            background-color: #f5f5f5;
             font-family: Arial, sans-serif;
-            background-size: cover;
-            background-position: center;
-            background-repeat: no-repeat;
-            color: #ffffff;
-            transition: background 0.3s;
+            color: #333;
+            overflow: hidden;
+            transition: all 0.3s ease-in-out;
         }
 
-        /* 半透明玻璃效果的搜索框容器 */
+        /* 搜索框容器的玻璃效果 */
         .search-container {
             display: flex;
             flex-direction: column;
             align-items: center;
             padding: 20px;
-            background: rgba(255, 255, 255, 0.15);
+            background: rgba(255, 255, 255, 0.7);
             backdrop-filter: blur(10px);
             border-radius: 12px;
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.25);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
             max-width: 600px;
             width: 90%;
+            opacity: 0;
+            transform: translateY(-20px);
+            animation: fadeInUp 0.8s forwards;
         }
 
-        /* Logo 样式 */
+        /* logo */
         .logo {
             font-size: 48px;
             font-weight: bold;
             margin-bottom: 20px;
-            letter-spacing: -2px;
-            color: #ffffff;
+            color: #4285f4;
+            animation: textFadeIn 1.5s forwards;
         }
 
         /* 搜索框样式 */
@@ -50,18 +52,26 @@
             width: 100%;
             display: flex;
             align-items: center;
+            margin-top: 20px;
         }
 
         .search-box input {
             width: 100%;
-            padding: 12px 16px;
+            padding: 12px 20px;
             border-radius: 30px;
-            border: none;
+            border: 1px solid #ccc;
             font-size: 18px;
             outline: none;
+            box-shadow: 0 0 8px rgba(0, 0, 0, 0.1);
+            transition: box-shadow 0.3s ease, transform 0.3s ease;
         }
 
-        /* 搜索按钮样式 */
+        .search-box input:focus {
+            box-shadow: 0 4px 20px rgba(66, 133, 244, 0.3);
+            transform: scale(1.03);
+        }
+
+        /* 搜索按钮 */
         .search-button {
             margin-top: 20px;
             background-color: #4285f4;
@@ -71,21 +81,23 @@
             border: none;
             border-radius: 20px;
             cursor: pointer;
-            transition: background-color 0.3s ease;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.15);
+            transition: background-color 0.3s ease, transform 0.2s;
         }
 
         .search-button:hover {
             background-color: #357ae8;
+            transform: translateY(-2px);
         }
 
-        /* 自动补全下拉列表 */
+        /* 自动补全下拉菜单 */
         .suggestions {
             position: absolute;
             top: 50px;
             width: 100%;
             background: white;
             border-radius: 8px;
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.25);
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
             display: none;
             max-height: 200px;
             overflow-y: auto;
@@ -93,19 +105,37 @@
         }
 
         .suggestion-item {
-            padding: 8px 12px;
+            padding: 10px 15px;
             cursor: pointer;
+            transition: background-color 0.2s;
         }
 
         .suggestion-item:hover {
             background-color: #f1f1f1;
+        }
+
+        /* 动画效果 */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes textFadeIn {
+            0% { opacity: 0; transform: translateY(-15px); }
+            100% { opacity: 1; transform: translateY(0); }
         }
     </style>
 </head>
 <body>
     <div class="search-container">
         <div class="logo">定边七中</div>
-        
+
         <div class="search-box">
             <input id="search-input" type="text" placeholder="请输入搜索关键词" autocomplete="off" oninput="fetchSuggestions()">
             <div id="suggestions" class="suggestions"></div>
@@ -116,14 +146,7 @@
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/0.21.1/axios.min.js"></script>
     <script>
-        // 随机背景图片
-        function setRandomBackground() {
-            document.body.style.backgroundImage = 'url("https://source.unsplash.com/1600x900/?nature,water")';
-        }
-        
-        setRandomBackground();
-
-        // 获取百度搜索提示 API 返回的建议
+        // 动态获取百度搜索建议
         async function fetchSuggestions() {
             const input = document.getElementById('search-input');
             const suggestionsBox = document.getElementById('suggestions');
@@ -135,7 +158,6 @@
                         adapter: jsonpAdapter,
                     });
 
-                    // 处理百度 JSONP 响应，显示建议
                     const suggestions = response.data.s || [];
                     suggestionsBox.innerHTML = '';
                     
@@ -176,7 +198,7 @@
             });
         };
 
-        // 搜索功能
+        // 执行搜索
         function performSearch() {
             const query = document.getElementById('search-input').value.trim();
             if (query) {
