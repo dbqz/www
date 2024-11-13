@@ -13,84 +13,88 @@
             100% { background-position: 0% 50%; }
         }
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            min-height: 100vh;
+            font-family: Arial, sans-serif;
+            background: url('https://source.unsplash.com/1600x900/?nature,water') no-repeat center center fixed;
+            background-size: cover;
             display: flex;
             flex-direction: column;
-        }
-        .gradient-bg {
-            background: linear-gradient(-45deg, #ee7752, #e73c7e, #23a6d5, #23d5ab);
-            background-size: 400% 400%;
-            animation: gradientBG 15s ease infinite;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            margin: 0;
+            color: #202124;
         }
         .glass {
-            background: rgba(255, 255, 255, 0.25);
-            backdrop-filter: blur(4px);
-            border-radius: 10px;
-            border: 1px solid rgba(255, 255, 255, 0.18);
+            background: rgba(255, 255, 255, 0.85);
+            backdrop-filter: blur(10px);
+            padding: 20px;
+            border-radius: 8px;
+            width: 100%;
+            max-width: 600px;
+            text-align: center;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
         }
         .search-input {
-            transition: all 0.3s ease-in-out;
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #dfe1e5;
+            border-radius: 24px;
+            font-size: 18px;
+            outline: none;
+            transition: all 0.3s ease;
         }
         .search-input:focus {
-            transform: scale(1.05);
-            box-shadow: 0 0 15px rgba(255, 255, 255, 0.5);
+            box-shadow: 0 1px 6px rgba(32, 33, 36, 0.28);
+            border-color: #4285f4;
         }
         .platform-btn {
-            transition: all 0.3s ease-in-out;
+            background: none;
+            color: #202124;
+            font-size: 16px;
+            padding: 8px 16px;
+            border: none;
+            cursor: pointer;
+            transition: background 0.3s;
         }
         .platform-btn:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+            background: rgba(60, 64, 67, 0.1);
+            border-radius: 8px;
         }
         #quote {
+            font-size: 14px;
+            color: #5f6368;
+            margin-top: 10px;
             transition: all 0.5s ease;
-        }
-        #quote:hover {
-            transform: scale(1.05);
-        }
-        .footer {
-            margin-top: auto;
         }
     </style>
 </head>
-<body class="gradient-bg">
-    <div class="container mx-auto px-4 py-8">
-        <div class="glass p-8 max-w-2xl mx-auto">
-            <h1 class="text-4xl font-bold text-center text-white mb-8">定边七中</h1>
-            
-            <form id="search-form" class="mb-8">
-                <div class="relative">
-                    <input type="text" id="search-input" class="search-input w-full p-4 rounded-full text-xl focus:outline-none transition-all duration-300" placeholder="请输入搜索关键词" required>
-                    <button type="submit" class="absolute right-0 top-0 mt-4 mr-5">
-                        <i class="fas fa-search text-gray-600 text-2xl"></i>
-                    </button>
-                </div>
-            </form>
+<body>
+    <div class="glass">
+        <h1 class="text-3xl font-semibold mb-6 text-gray-900">定边七中</h1>
 
-            <div class="flex justify-center space-x-4 mb-8">
-                <button class="platform-btn bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-4 rounded-full transition duration-300" data-platform="https://www.baidu.com/s?wd=">
-                    <i class="fab fa-baidu mr-2"></i>百度
-                </button>
-                <button class="platform-btn bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded-full transition duration-300" data-platform="https://www.bing.com/search?q=">
-                    <i class="fab fa-microsoft mr-2"></i>Bing
-                </button>
-                <button class="platform-btn bg-yellow-500 hover:bg-yellow-600 text-white font-bold py-2 px-4 rounded-full transition duration-300" data-platform="https://www.google.com/search?q=">
-                    <i class="fab fa-google mr-2"></i>Google
+        <form id="search-form" class="mb-6">
+            <div class="relative">
+                <input type="text" id="search-input" class="search-input" placeholder="在网络上搜索" required>
+                <button type="submit" class="absolute right-4 top-1/2 transform -translate-y-1/2">
+                    <i class="fas fa-search text-gray-500"></i>
                 </button>
             </div>
+        </form>
 
-            <div id="quote" class="text-center text-white p-4 rounded-lg bg-opacity-50 bg-gray-800">
-                <i class="fas fa-quote-left mr-2"></i>
-                <span id="quote-text">加载中...</span>
-                <i class="fas fa-quote-right ml-2"></i>
-            </div>
+        <div class="flex justify-center space-x-4">
+            <button class="platform-btn" data-platform="https://www.baidu.com/s?wd=">百度</button>
+            <button class="platform-btn" data-platform="https://www.bing.com/search?q=">Bing</button>
+            <button class="platform-btn" data-platform="https://www.google.com/search?q=">Google</button>
+        </div>
+
+        <div id="quote" class="mt-6">
+            <span id="quote-text">加载中...</span>
         </div>
     </div>
 
-    <footer class="footer bg-gray-800 bg-opacity-50 text-white text-center py-4">
+    <footer class="mt-8 text-sm text-white">
         <p>&copy; 2024 定边七中.</p>
-        <p class="mt-2">备案号：<a href="http://beian.miit.gov.cn" target="_blank" class="text-blue-300 hover:underline">陕ICP备72618371号-X</a></p>
+        <p>备案号：<a href="http://beian.miit.gov.cn" target="_blank" class="text-blue-300 hover:underline">陕ICP备72618371号-X</a></p>
     </footer>
 
     <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
@@ -103,8 +107,8 @@
         document.querySelectorAll('.platform-btn').forEach(btn => {
             btn.addEventListener('click', function() {
                 selectedPlatform = this.dataset.platform;
-                document.querySelectorAll('.platform-btn').forEach(b => b.classList.remove('ring-4', 'ring-white'));
-                this.classList.add('ring-4', 'ring-white');
+                document.querySelectorAll('.platform-btn').forEach(b => b.classList.remove('font-bold'));
+                this.classList.add('font-bold');
             });
         });
 
@@ -114,28 +118,23 @@
             window.open(selectedPlatform + encodeURIComponent(searchTerm), '_blank');
         });
 
-        // 引入 axios，确保在使用此脚本前已经通过 CDN 或其他方式正确引入了 axios
-if (typeof axios === 'undefined') {
-    console.error('请确保已经正确引入了 axios 库');
-}
+        // 获取名言
+        async function getRandomQuote() {
+            const quoteText = document.getElementById('quote-text');
+            try {
+                const response = await axios.get('https://v1.hitokoto.cn');
+                const { content, from } = response.data;
+                quoteText.innerHTML = `${content} - <strong>${from || '未知'}</strong>`;
+            } catch (error) {
+                console.error('Error fetching quote:', error);
+                quoteText.textContent = '无法获取名言';
+            }
+        }
 
-async function getRandomQuote() {
-    const quoteText = document.getElementById('quote-text');
-    try {
-        const response = await axios.get('https://v1.hitokoto.cn');
-        const { content, from } = response.data; // 使用 from 字段作为出处
-        quoteText.innerHTML = `${content} - <strong>${from || '未知'}</strong>`;
-    } catch (error) {
-        console.error('Error fetching quote:', error);
-        quoteText.textContent = '无法获取名言';
-    }
-}
-
-// 页面加载完成后初始化，并设置每分钟更新一次名言
-document.addEventListener('DOMContentLoaded', () => {
-    getRandomQuote(); // 初始化时获取一条名言
-    setInterval(getRandomQuote, 60000); // 每隔60秒（1分钟）更新一次名言
-});
+        document.addEventListener('DOMContentLoaded', () => {
+            getRandomQuote();
+            setInterval(getRandomQuote, 60000);
+        });
     </script>
 </body>
 </html>
