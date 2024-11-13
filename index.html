@@ -24,7 +24,7 @@
             color: #4285f4;
             letter-spacing: -5px;
         }
-        
+
         .logo span:nth-child(2) { color: #ea4335; }
         .logo span:nth-child(3) { color: #fbbc05; }
         .logo span:nth-child(4) { color: #4285f4; }
@@ -92,6 +92,30 @@
             border-color: #c6c6c6;
         }
 
+        /* Suggestion box */
+        .suggestions {
+            width: 100%;
+            background: white;
+            border: 1px solid #dfe1e5;
+            border-radius: 8px;
+            margin-top: 8px;
+            padding: 10px;
+            display: none;
+            box-shadow: 0 1px 6px rgba(32, 33, 36, 0.28);
+            max-height: 200px;
+            overflow-y: auto;
+        }
+
+        .suggestion-item {
+            padding: 8px;
+            cursor: pointer;
+            border-bottom: 1px solid #f1f3f4;
+        }
+
+        .suggestion-item:hover {
+            background-color: #f1f3f4;
+        }
+
         footer {
             position: absolute;
             bottom: 0;
@@ -121,11 +145,14 @@
     <div class="search-container">
         <div class="search-box">
             <i class="search-icon fas fa-search"></i>
-            <input id="search-input" type="text" placeholder="请输入搜索关键词" autocomplete="off">
+            <input id="search-input" type="text" placeholder="请输入搜索关键词" autocomplete="off" oninput="getSuggestions()">
         </div>
         
+        <!-- Suggestion box -->
+        <div id="suggestions" class="suggestions"></div>
+        
         <div class="search-button-container">
-            <button class="search-button" onclick="performSearch()">搜索</button>
+            <button class="search-button" onclick="performSearch()">百度搜索</button>
             <button class="search-button" onclick="document.getElementById('search-input').value = ''">清空</button>
         </div>
     </div>
@@ -136,10 +163,46 @@
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/js/all.min.js"></script>
     <script>
-        function performSearch() {
+        // 动态获取搜索建议
+        function getSuggestions() {
             const query = document.getElementById('search-input').value;
-            if (query) {
-                const url = 'https://www.baidu.com/s?wd=' + encodeURIComponent(query);
+            const suggestionsBox = document.getElementById('suggestions');
+
+            if (query.length < 2) {
+                suggestionsBox.style.display = 'none';
+                return;
+            }
+
+            const script = document.createElement('script');
+            script.src = `https://suggestion.baidu.com/su?wd=${encodeURIComponent(query)}&cb=showSuggestions`;
+            document.body.appendChild(script);
+            document.body.removeChild(script);
+        }
+
+        // JSONP 回调函数显示建议
+        function showSuggestions(data) {
+            const suggestionsBox = document.getElementById('suggestions');
+            suggestionsBox.innerHTML = '';
+
+            if (data.s && data.s.length > 0) {
+                suggestionsBox.style.display = 'block';
+                data.s.forEach(item => {
+                    const div = document.createElement('div');
+                    div.className = 'suggestion-item';
+                    div.textContent = item;
+                    div.onclick = () => performSearch(item);
+                    suggestionsBox.appendChild(div);
+                });
+            } else {
+                suggestionsBox.style.display = 'none';
+            }
+        }
+
+        // 执行搜索
+        function performSearch(query) {
+            const searchQuery = query || document.getElementById('search-input').value;
+            if (searchQuery) {
+                const url = 'https://www.baidu.com/s?wd=' + encodeURIComponent(searchQuery);
                 window.open(url, '_blank');
             }
         }
