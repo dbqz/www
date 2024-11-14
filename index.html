@@ -4,7 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>定边七中</title>
-    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
     <style>
         body {
             display: flex;
@@ -23,18 +22,17 @@
             font-weight: bold;
             color: #4285f4;
             letter-spacing: -5px;
+            margin-bottom: 20px;
         }
 
         .logo span:nth-child(2) { color: #ea4335; }
         .logo span:nth-child(3) { color: #fbbc05; }
         .logo span:nth-child(4) { color: #4285f4; }
-        .logo span:nth-child(5) { color: #34a853; }
 
         .search-container {
             display: flex;
             flex-direction: column;
             align-items: center;
-            margin-top: 20px;
             width: 100%;
             max-width: 584px;
         }
@@ -52,17 +50,16 @@
             transition: box-shadow 0.2s ease-in-out;
         }
 
-        .search-box:hover {
+        .search-box:hover, .search-box:focus-within {
             box-shadow: 0 1px 6px rgba(32, 33, 36, 0.3);
         }
 
         .search-box input {
-            width: 100%;
-            height: 100%;
+            flex: 1;
             border: none;
             outline: none;
-            padding: 0 10px;
             font-size: 16px;
+            padding: 0 8px;
         }
 
         .search-icon {
@@ -92,24 +89,22 @@
             border-color: #c6c6c6;
         }
 
-        /* Suggestion box */
         .suggestions {
             width: 100%;
             background: white;
             border: 1px solid #dfe1e5;
-            border-radius: 8px;
-            margin-top: 8px;
-            padding: 10px;
+            border-radius: 0 0 24px 24px;
+            margin-top: -1px;
+            box-shadow: 0 4px 6px rgba(32, 33, 36, 0.28);
             display: none;
-            box-shadow: 0 1px 6px rgba(32, 33, 36, 0.28);
-            max-height: 200px;
+            max-height: 300px;
             overflow-y: auto;
         }
 
         .suggestion-item {
-            padding: 8px;
+            padding: 10px 14px;
             cursor: pointer;
-            border-bottom: 1px solid #f1f3f4;
+            font-size: 16px;
         }
 
         .suggestion-item:hover {
@@ -117,7 +112,7 @@
         }
 
         footer {
-            position: absolute;
+            position: fixed;
             bottom: 0;
             width: 100%;
             text-align: center;
@@ -145,28 +140,49 @@
     <div class="search-container">
         <div class="search-box">
             <i class="search-icon fas fa-search"></i>
-            <input id="search-input" type="text" placeholder="请输入搜索关键词" autocomplete="off" oninput="fetchSuggestions()">
+            <input id="search-input" type="text" placeholder="请输入搜索关键词" autocomplete="off">
         </div>
         
-        <!-- Suggestion box -->
         <div id="suggestions" class="suggestions"></div>
         
         <div class="search-button-container">
-            <button class="search-button" onclick="performSearch()">百度搜索</button>
-            <button class="search-button" onclick="document.getElementById('search-input').value = ''">清空</button>
+            <button class="search-button" id="search-button">搜索</button>
+            <button class="search-button" id="clear-button">清空</button>
         </div>
     </div>
 
     <footer>
-        <p>&copy; 2024 定边七中. 备案号：<a href="http://beian.miit.gov.cn" target="_blank">陕ICP备72618371号-X</a></p>
+        <p>&copy; 2024 定边七中. 备案号：<a href="http://beian.miit.gov.cn" target="_blank">陕ICP备72618371号-1</a></p>
     </footer>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/js/all.min.js"></script>
     <script>
-        // JSONP方式实现百度搜索建议
+        const searchInput = document.getElementById('search-input');
+        const suggestionsBox = document.getElementById('suggestions');
+        const searchButton = document.getElementById('search-button');
+        const clearButton = document.getElementById('clear-button');
+
+        let debounceTimer;
+
+        searchInput.addEventListener('input', () => {
+            clearTimeout(debounceTimer);
+            debounceTimer = setTimeout(fetchSuggestions, 300);
+        });
+
+        searchInput.addEventListener('focus', () => {
+            if (suggestionsBox.children.length > 0) {
+                suggestionsBox.style.display = 'block';
+            }
+        });
+
+        searchInput.addEventListener('blur', () => {
+            setTimeout(() => {
+                suggestionsBox.style.display = 'none';
+            }, 200);
+        });
+
         function fetchSuggestions() {
-            const input = document.getElementById('search-input').value;
-            const suggestionsBox = document.getElementById('suggestions');
+            const input = searchInput.value;
             
             if (input.length === 0) {
                 suggestionsBox.style.display = 'none';
@@ -174,24 +190,24 @@
             }
 
             const script = document.createElement('script');
-            script.src = `http://suggestion.baidu.com/su?wd=${encodeURIComponent(input)}&cb=displaySuggestions`;
+            script.src = `https://suggestion.baidu.com/su?wd=${encodeURIComponent(input)}&cb=handleSuggestions`;
             document.body.appendChild(script);
             document.body.removeChild(script);
         }
 
-        function displaySuggestions(data) {
-            const suggestionsBox = document.getElementById('suggestions');
+        window.handleSuggestions = function(data) {
+            const suggestions = data.s;
             suggestionsBox.innerHTML = '';
 
-            if (data.s && data.s.length > 0) {
-                data.s.forEach(suggestion => {
+            if (suggestions.length > 0) {
+                suggestions.forEach(suggestion => {
                     const suggestionItem = document.createElement('div');
                     suggestionItem.className = 'suggestion-item';
                     suggestionItem.textContent = suggestion;
-                    suggestionItem.onclick = () => {
-                        document.getElementById('search-input').value = suggestion;
+                    suggestionItem.addEventListener('click', () => {
+                        searchInput.value = suggestion;
                         performSearch();
-                    };
+                    });
                     suggestionsBox.appendChild(suggestionItem);
                 });
                 suggestionsBox.style.display = 'block';
@@ -200,14 +216,41 @@
             }
         }
 
-        // 执行搜索
         function performSearch() {
-            const searchQuery = document.getElementById('search-input').value;
+            const searchQuery = searchInput.value;
             if (searchQuery) {
                 const url = 'https://www.baidu.com/s?wd=' + encodeURIComponent(searchQuery);
                 window.open(url, '_blank');
             }
         }
+
+        searchButton.addEventListener('click', performSearch);
+
+        clearButton.addEventListener('click', () => {
+            searchInput.value = '';
+            suggestionsBox.innerHTML = '';
+            suggestionsBox.style.display = 'none';
+        });
+
+        // 键盘导航支持
+        searchInput.addEventListener('keydown', (e) => {
+            if (e.key === 'ArrowDown' || e.key === 'ArrowUp') {
+                e.preventDefault();
+                const items = suggestionsBox.querySelectorAll('.suggestion-item');
+                const currentIndex = Array.from(items).findIndex(item => item === document.activeElement);
+                let nextIndex;
+
+                if (e.key === 'ArrowDown') {
+                    nextIndex = currentIndex < items.length - 1 ? currentIndex + 1 : 0;
+                } else {
+                    nextIndex = currentIndex > 0 ? currentIndex - 1 : items.length - 1;
+                }
+
+                items[nextIndex].focus();
+            } else if (e.key === 'Enter') {
+                performSearch();
+            }
+        });
     </script>
 </body>
 </html>
