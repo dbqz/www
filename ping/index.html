@@ -76,6 +76,8 @@ button:hover {
     <div id="testResult" class="result"></div>
 </div>
 
+<!-- 引入 SpeedTest 库 -->
+<script src="https://cdn.jsdelivr.net/npm/speed-test@2.1.3/dist/index.min.js"></script>
 <script>
 async function startTest() {
     const node = document.getElementById('nodeSelect').value;
@@ -85,21 +87,20 @@ async function startTest() {
     resultDiv.innerHTML = '<p>正在测速...</p>';
 
     try {
-        // 获取测速结果
-        const response = await fetch('https://fast.com/json');
-        if (!response.ok) {
-            throw new Error('网络请求失败');
-        }
+        // 执行测速
+        const test = new SpeedTest();
+        await test.start();
 
-        const data = await response.json();
+        // 获取测速结果
+        const results = test.results;
 
         // 显示测试结果
         resultDiv.innerHTML = `
-            <p>下载速度: ${data.download} Mbps</p>
-            <p>上传速度: ${data.upload} Mbps</p>
-            <p>延迟(Ping): ${data.ping} ms</p>
-            <p>抖动(Jitter): ${data.jitter} ms</p>
-            <p>丢包率(Packet Loss): ${data.packetLoss} %</p>
+            <p>下载速度: ${results.download} Mbps</p>
+            <p>上传速度: ${results.upload} Mbps</p>
+            <p>延迟(Ping): ${results.ping} ms</p>
+            <p>抖动(Jitter): ${results.jitter} ms</p>
+            <p>丢包率(Packet Loss): ${results.packetLoss} %</p>
         `;
     } catch (error) {
         resultDiv.innerHTML = `<p class="error">测速失败: ${error.message}</p>`;
